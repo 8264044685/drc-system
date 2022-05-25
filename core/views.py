@@ -110,8 +110,26 @@ class UserProfileAPiView(rest_views.APIView):
     permission_classes = [IsAuthenticated,]
 
     def post(self, request):
-        pass
+        
+        serializer_instance = core_serializers.UserProfileSerializer(data=request.data)
 
+        if not serializer_instance.is_valid():
+            return rest_response.Response(
+                data = {"data":serializer_instance.errors}, 
+                status = rest_status.HTTP_400_BAD_REQUEST
+            )
+
+        emails = serializer_instance.validated_data.get('emails')
+        user = request.user
+        for obj in emails:
+            email = obj.get('email')
+            is_primary = obj.get('is_primary')
+            email_instance = core_models.UserEmail.objects.filter(user=user, email=email).last()
+            if email_instance:
+                email_instance.is_primary = is_primary
+                email_instance.save(update_fields=['is_primary'])
+            else:
+                core_models.UserEmail.objects.create(user=user, email=email, is_primary=is_primary)
 
         
-        
+        return rest_response.Response(data={"data":user.get_details()}, status=rest_status.HTTP_200_OK)

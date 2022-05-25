@@ -56,3 +56,6 @@ class UserOTPVerifySerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid OTP")
 
         return value
+
+class UserProfileSerializer(serializers.Serializer):
+    emails = UserEmails(many=True)
