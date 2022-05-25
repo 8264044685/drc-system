@@ -15,6 +15,8 @@ from core import utils as core_utils
 from rest_framework.authtoken import models as token_models
 from rest_framework.permissions import IsAuthenticated
 
+import core
+
 # Create your views here.
 
 
@@ -51,7 +53,6 @@ class RegisterAPiView(rest_views.APIView):
 
         sms_otp = ""
         if mobile not in dj_settings.OTP_IGNORE_MOBILE:
-
             if not user.is_user_blocked:
                 if not cache.get(mobile):
                     sms_otp = core_utils.send_otp(
@@ -67,6 +68,7 @@ class RegisterAPiView(rest_views.APIView):
                     user.save(update_fields=['number_of_attempt', "is_user_blocked"])
                 return rest_response.Response(data={"data":"Your maximum 3 attempt exceed please wait for five minutes"}, status=rest_status.HTTP_400_BAD_REQUEST)
 
+        core_utils.user_send_mail(user)
         return rest_response.Response(data={"data":user.get_details()}, status=rest_status.HTTP_200_OK)
 
 

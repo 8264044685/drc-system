@@ -39,8 +39,6 @@ class UserOTPVerifySerializer(serializers.Serializer):
         if mobile in dj_settings.OTP_IGNORE_MOBILE and str(value) == "1234":
             return value
         cache_otp = cache.get("otp_%s" % mobile)
-        print("cache_otp=====>", cache_otp)
-        print("str(value)=====>", str(value))
         if str(cache_otp) != str(value):
             user_instace = core_models.User.objects.filter(mobile=mobile).last()
             if user_instace.number_of_attempt >= 3:
