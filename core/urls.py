@@ -18,5 +18,7 @@ from django.urls import path, include
 from core import views as core_views 
 
 urlpatterns = [
-    path('register/', core_views.RegisterAPiView.as_view(), name="register")
+    path('register/', core_views.RegisterAPiView.as_view(), name="register"),
+    path('login/', core_views.LoginAPIView.as_view(), name="login"),
+    path('user-profile/', core_views.UserProfileAPiView.as_view(), name="user-profile")
 ]

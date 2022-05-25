@@ -21,6 +21,9 @@ class User(auth_models.AbstractUser):
     phone_regex = RegexValidator( regex   =r'^\+?1?\d{9,14}$', message ="Phone number must be entered in the format: '+999999999'. Up to 14 digits allowed.")
     mobile = models.CharField(validators=[phone_regex], max_length=17,db_index=True, unique=True)    
     is_mobile_verified = models.BooleanField(default=False)
+    number_of_attempt = models.IntegerField(default=0)
+    otp_block_time = models.DateTimeField(null=True, blank=True)
+    is_user_blocked = models.BooleanField(default=False)
     
     
     class Meta:
@@ -37,6 +40,7 @@ class User(auth_models.AbstractUser):
     
     def get_details(self):
         return {
+            "user_id":self.id,
             "username":self.username,
             "emails":[obj.get_details() for obj in self.user_emails.filter(is_deleted=False)],
             "mobile":self.mobile
